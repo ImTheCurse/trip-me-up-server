@@ -15,7 +15,6 @@ export async function is_relavent(context){
     })
 
     const openai = new OpenAI({apiKey:api_key});
-    console.log(context)
     const response = await openai.chat.completions.create({
         model: "gpt-4o-mini",
         max_completion_tokens:250,
@@ -45,6 +44,7 @@ export async function createUnformattedPrompt(context){
 export async function createformattedPrompt(context,fmt){
     const api_key = process.env.OPEN_AI_KEY
     const openai = new OpenAI({apiKey:api_key});
+    
     const response = await openai.chat.completions.create({
         model: "gpt-4o-mini",
         max_completion_tokens:100,
@@ -59,21 +59,22 @@ export async function replyToMessage(msg,fmt,answered_params,ctx,ws){
         ctx.push({ role:"user",content:msg })
         
         const is_rel = await is_relavent(ctx);
-        if (!is_rel){
+        if (!is_rel && ctx.length !== 1){
             ctx.pop()
             const response = await createUnformattedPrompt(ctx)
             ws.send(response)
             return;
         }
-
-
-        
-
         const response_to_trip = await createformattedPrompt(ctx,fmt)
 
+
+        if(fmt.shape.next === 'null'){
+            answered_params.push(response_to_trip)
+            return;
+        }
         ctx.push({
-            role:"system",content:`Ask user in natural language for ${fmt.shape.name}, use the word
-            ${fmt.shape.name} in your message. and only about it, keep your answer short.`
+            role:"system",content:`Ask user in natural language for ${fmt.shape.next}, use the word
+            ${fmt.shape.next} in your message. and only about it, keep your answer short.`
         })
 
         const response_to_user = await createUnformattedPrompt(ctx) 
@@ -85,4 +86,4 @@ export async function replyToMessage(msg,fmt,answered_params,ctx,ws){
             content:response_to_user
         })
         ws.send(response_to_user)
-    }
+}
