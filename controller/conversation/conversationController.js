@@ -1,5 +1,5 @@
 import zod from "zod"
-import { createformattedPrompt, createUnformattedPrompt,replyToMessage,is_relavent } from "./conversationUtil.js"
+import { replyToMessage,createUnlimitedFormattedPrompt} from "./conversationUtil.js"
 
 
 export async function handleConversation(ws,req){
@@ -16,6 +16,13 @@ export async function handleConversation(ws,req){
         zod.object({purpose : zod.string(),next:'null'}) 
     ]
 
+    const trip_structure = zod.object({
+        name: zod.string(),
+        desc: zod.string(),
+        num_of_stars_out_of_five: zod.number(),
+        opening_hours: zod.string()
+    })
+
     const answered_params = []
     let idx = 0;
     // Create first question from openai.
@@ -30,11 +37,36 @@ export async function handleConversation(ws,req){
 
         if(idx >= params.length){
             ws.send("Genrating route...")
-            answered_params.map((x)=>{
+            const parsed_params = answered_params.map((x)=>{
                 return JSON.parse(x)
             })
-            console.log(answered_params)
             // TODO: add route genration
+            
+            const trip = {
+                country: parsed_params[0].country,
+                city: parsed_params[1].city,
+                hobbies: parsed_params[2].hobbies,
+                duration: parsed_params[3].duration,
+                purpose: parsed_params[4].purpose
+            }
+
+            const gen_ctx = [
+                {
+                    role: "user",
+                    content: `Give me places to visit in ${trip.country} and in ${trip.city} 
+                    for the following hobbies: ${trip.hobbies},
+                    with the duration of ${trip.duration} with the purpose of ${trip.purpose}`
+                }
+            ]
+            const sites_structure = zod.object({
+                places: zod.array(trip_structure)
+            })
+
+            const gen_route = await createUnlimitedFormattedPrompt(gen_ctx,sites_structure)
+            const parsed_route = JSON.parse(gen_route)
+            console.log(parsed_route)
+
+
             return;
         }
     });
