@@ -65,6 +65,8 @@ export async function handleConversation(ws,req){
             const gen_route = await createUnlimitedFormattedPrompt(gen_ctx,sites_structure)
             const parsed_route = JSON.parse(gen_route)
             console.log(parsed_route)
+            ws.send(gen_route)
+            ws.close()
 
 
             return;
