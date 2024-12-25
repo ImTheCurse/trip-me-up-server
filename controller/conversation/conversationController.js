@@ -1,80 +1,97 @@
-import zod from "zod"
-import { replyToMessage,createUnlimitedFormattedPrompt} from "./conversationUtil.js"
+import zod from "zod";
+import {
+  replyToMessage,
+  createUnlimitedFormattedPrompt,
+} from "./conversationUtil.js";
 
+export async function handleConversation(ws, req) {
+  //Initalize contex with response from openai
+  const init_message = JSON.stringify({
+    message: "In what country would you like to start your trip?",
+    route: null,
+  });
 
-export async function handleConversation(ws,req){
-    //Initalize contex with response from openai
-    const init_message ='In what country would you like to start your trip?' 
-    const ctx = [] 
+  const ctx = [];
 
-    // Create json formatted trip scheme
-    const params = [
-        zod.object({country: zod.string(),next:'city'}),
-        zod.object({city: zod.string(),next:'hobbies'}),
-        zod.object({hobbies: zod.string(),next:'duration'}),
-        zod.object({duration: zod.number(),next:'purpose'}),    
-        zod.object({purpose : zod.string(),next:'null'}) 
-    ]
+  // Create json formatted trip scheme
+  const params = [
+    zod.object({ country: zod.string(), next: "city" }),
+    zod.object({ city: zod.string(), next: "hobbies" }),
+    zod.object({ hobbies: zod.string(), next: "duration" }),
+    zod.object({ duration: zod.number(), next: "purpose" }),
+    zod.object({ purpose: zod.string(), next: "null" }),
+  ];
 
-    const trip_structure = zod.object({
-        name: zod.string(),
-        desc: zod.string(),
-        num_of_stars_out_of_five: zod.number(),
-        opening_hours: zod.string()
-    })
+  const trip_structure = zod.object({
+    name: zod.string(),
+    desc: zod.string(),
+    num_of_stars_out_of_five: zod.number(),
+    opening_hours: zod.string(),
+  });
 
-    const answered_params = []
-    let idx = 0;
-    // Create first question from openai.
+  const answered_params = [];
+  let idx = 0;
 
-    //Send assistant response on websocket 
-    ws.send(init_message);
-    
-    //websocket event listners
-    ws.on('message',async(msg)=>{
-        await replyToMessage(msg,params[idx],answered_params,ctx,ws)
-        idx++;
+  //Send assistant response on websocket
+  ws.send(init_message);
 
-        if(idx >= params.length){
-            ws.send("Genrating route...")
-            const parsed_params = answered_params.map((x)=>{
-                return JSON.parse(x)
-            })
-            // TODO: add route genration
-            
-            const trip = {
-                country: parsed_params[0].country,
-                city: parsed_params[1].city,
-                hobbies: parsed_params[2].hobbies,
-                duration: parsed_params[3].duration,
-                purpose: parsed_params[4].purpose
-            }
+  //websocket event listners
+  ws.on("message", async (msg) => {
+    try {
+      await replyToMessage(msg, params[idx], answered_params, ctx, ws);
+    } catch (err) {
+      ws.send(`Error: ${err}`);
+      ws.close();
+    }
+    idx++;
 
-            const gen_ctx = [
-                {
-                    role: "user",
-                    content: `Give me places to visit in ${trip.country} and in ${trip.city} 
+    if (idx >= params.length) {
+      ws.send(JSON.stringify({message:"Genrating route...",route:null}));
+      const parsed_params = answered_params.map((x) => {
+        return JSON.parse(x);
+      });
+
+      const trip = {
+        country: parsed_params[0].country,
+        city: parsed_params[1].city,
+        hobbies: parsed_params[2].hobbies,
+        duration: parsed_params[3].duration,
+        purpose: parsed_params[4].purpose,
+      };
+
+      const gen_ctx = [
+        {
+          role: "user",
+          content: `Give me places to visit in ${trip.country} and in ${trip.city}
                     for the following hobbies: ${trip.hobbies},
-                    with the duration of ${trip.duration} with the purpose of ${trip.purpose}`
-                }
-            ]
-            const sites_structure = zod.object({
-                places: zod.array(trip_structure)
-            })
+                    with the duration of ${trip.duration} with the purpose of ${trip.purpose}`,
+        },
+      ];
+      const sites_structure = zod.object({
+        places: zod.array(trip_structure),
+      });
 
-            const gen_route = await createUnlimitedFormattedPrompt(gen_ctx,sites_structure)
-            const parsed_route = JSON.parse(gen_route)
-            console.log(parsed_route)
-            ws.send(gen_route)
-            ws.close()
+      try {
+        const gen_route = await createUnlimitedFormattedPrompt(
+          gen_ctx,
+          sites_structure,
+        );
+        const resp = {
+          message: null,
+          route: gen_route,
+        };
+        ws.send(JSON.stringify(resp));
+        ws.close();
 
-
-            return;
-        }
-    });
-    ws.on('error', (err) => {
-        console.error("WebSocket error:", err);
-    });
-    ws.on('close',(x)=> console.log(x))
+        return;
+      } catch (err) {
+        ws.send(`Error: ${err}`);
+        ws.close();
+      }
+    }
+  });
+  ws.on("error", (err) => {
+    console.error("WebSocket error:", err);
+  });
+  ws.on("close", (x) => console.log(x));
 }
-
