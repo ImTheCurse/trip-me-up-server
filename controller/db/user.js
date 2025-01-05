@@ -9,6 +9,10 @@ export async function getUser(req,res){
             username like ${username} and password like ${password}
         `
 
+        if (users.length === 0){
+            return res.status(400).send()
+        }
+
         return res.status(200).send(users[0])
     }catch(err){
         console.error(err)
