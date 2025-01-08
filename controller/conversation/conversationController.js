@@ -1,4 +1,5 @@
 import zod from "zod";
+import { extractValidatePlaces } from "../places/places.js";
 import {
   replyToMessage,
   createUnlimitedFormattedPrompt,
@@ -46,7 +47,7 @@ export async function handleConversation(ws, req) {
     idx++;
 
     if (idx >= params.length) {
-      ws.send(JSON.stringify({message:"Genrating route...",route:null}));
+      ws.send(JSON.stringify({ message: "Genrating route...", route: null }));
       const parsed_params = answered_params.map((x) => {
         return JSON.parse(x);
       });
@@ -76,11 +77,13 @@ export async function handleConversation(ws, req) {
           gen_ctx,
           sites_structure,
         );
-        const resp = {
-          message: null,
-          route: gen_route,
-        };
-        ws.send(JSON.stringify(resp));
+
+        const p = JSON.parse(gen_route).places.map((x) => x.name);
+        const places = await extractValidatePlaces(p);
+
+        console.log(places);
+
+        ws.send(JSON.stringify(places));
         ws.close();
 
         return;

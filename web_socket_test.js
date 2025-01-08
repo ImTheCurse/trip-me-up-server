@@ -10,12 +10,12 @@ const answers = ['Germany','Baden Baden','spa, maybe visit the casino, but mainl
 // Listen for messages
 socket.addEventListener("message", (event) => {
   console.log("Message from server ", event.data);
-  setTimeout(()=>{
-    if (i >= answers.length){
-      return
-    }
-    socket.send(answers[i]);
-    i++;
-  },2000)
+  
+  if (i >= answers.length){
+    return
+  }
+  socket.send(answers[i]);
+  i++;
+  
 });
 
