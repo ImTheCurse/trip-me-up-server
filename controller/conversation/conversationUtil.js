@@ -28,7 +28,7 @@ export async function createformattedPrompt(context, fmt) {
   return response.choices[0].message.content;
 }
 
-export async function createUnlimitedFormattedPrompt(context, fmt) {
+export async function createUnlimitedFormattedPrompt(context, fmt, choice_num) {
   const api_key = process.env.OPEN_AI_KEY;
   const openai = new OpenAI({ apiKey: api_key });
 
@@ -38,7 +38,7 @@ export async function createUnlimitedFormattedPrompt(context, fmt) {
     response_format: zodResponseFormat(fmt, "trip-params"),
   });
 
-  return response.choices[0].message.content;
+  return response.choices[choice_num].message.content;
 }
 
 export async function replyToMessage(msg, fmt, answered_params, ctx, ws) {

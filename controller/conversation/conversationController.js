@@ -76,12 +76,22 @@ export async function handleConversation(ws, req) {
         const gen_route = await createUnlimitedFormattedPrompt(
           gen_ctx,
           sites_structure,
+          0,
         );
 
         const p = JSON.parse(gen_route).places.map((x) => x.name);
         const places = await extractValidatePlaces(p);
 
-        console.log(places);
+        if (places.length <= 3) {
+          const gen_route = await createUnlimitedFormattedPrompt(
+            gen_ctx,
+            sites_structure,
+            1,
+          );
+
+          const p = JSON.parse(gen_route).places.map((x) => x.name);
+          const places = await extractValidatePlaces(p);
+        }
 
         ws.send(JSON.stringify(places));
         ws.close();

@@ -1,6 +1,3 @@
-import { configDotenv } from "dotenv";
-configDotenv();
-
 export async function extractValidatePlaces(places) {
   const res = {
     places: [],
@@ -32,5 +29,3 @@ export async function extractValidatePlaces(places) {
   }
   return res;
 }
-
-const arr = ["Museum of arts new york", "Central park", "Joe's shawarma"];
