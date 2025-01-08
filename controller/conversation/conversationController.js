@@ -63,9 +63,10 @@ export async function handleConversation(ws, req) {
       const gen_ctx = [
         {
           role: "user",
-          content: `Give me places to visit in ${trip.country} and in ${trip.city}
-                    for the following hobbies: ${trip.hobbies},
-                    with the duration of ${trip.duration} with the purpose of ${trip.purpose}`,
+          content: `Give me places to visit in the country of ${trip.country} and in the cities of ${trip.city}
+                    for a person who is intrested in the following hobbies: ${trip.hobbies}.
+                    the trip should be a duration of ${trip.duration},the person should be able to drive within the timeframe
+                    to all the location. only give locations inside the cities, and atleast one per city stated.`,
         },
       ];
       const sites_structure = zod.object({
