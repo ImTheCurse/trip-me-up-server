@@ -10,6 +10,7 @@ export const tripRouter = new Router();
 tripRouter.post("/chat/prompt", promptController.handlePrompt);
 tripRouter.post("/login", userController.getUser);
 tripRouter.post("/route/add", routeController.addRouteToDB);
+tripRouter.put("/route/update", routeController.updateRoute);
 
 export const mountWSRoute = () => {
   tripRouter.ws(
