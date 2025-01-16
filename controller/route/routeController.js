@@ -100,4 +100,41 @@ export async function updateRoute(req, res) {
   }
 }
 
-export async function deleteRoute(req, res) {}
+export async function deleteRoute(req, res) {
+  const { route_id } = req.body;
+
+  if (route_id == null) {
+    res.status(400).send();
+  }
+  try {
+    const result = await sql`
+          select places from routes where ${route_id} = id;
+        `;
+    if (res.length === 0) {
+      res.status(400).send();
+    }
+
+    const place_del_res = await sql`
+          delete from place where id = ANY(${result[0].places})
+          returning id;
+        `;
+
+    if (place_del_res.length === 0) {
+      res.status(400).send();
+    }
+
+    const route_del_res = await sql`
+        delete from routes where id = ${route_id}
+        returning id;
+      `;
+
+    if (route_del_res.length === 0) {
+      res.status(400).send();
+    }
+
+    res.status(200).send(route_del_res);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send();
+  }
+}

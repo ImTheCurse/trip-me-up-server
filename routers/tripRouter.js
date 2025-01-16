@@ -11,6 +11,7 @@ tripRouter.post("/chat/prompt", promptController.handlePrompt);
 tripRouter.post("/login", userController.getUser);
 tripRouter.post("/route/add", routeController.addRouteToDB);
 tripRouter.put("/route/update", routeController.updateRoute);
+tripRouter.delete("/route/delete", routeController.deleteRoute);
 
 export const mountWSRoute = () => {
   tripRouter.ws(
