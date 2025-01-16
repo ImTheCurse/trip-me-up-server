@@ -7,6 +7,7 @@ export async function addRouteToDB(req, res) {
   try {
     if (user_id == null || locations == null) {
       res.status(400).send();
+      return;
     }
 
     const places = locations.map((loc) => {
@@ -29,6 +30,7 @@ export async function addRouteToDB(req, res) {
 
     if (result.length === 0) {
       res.status(400).send();
+      return;
     }
 
     const ids = result.map((row) => row.id);
@@ -41,6 +43,7 @@ export async function addRouteToDB(req, res) {
 
     if (route_res.length === 0) {
       res.status(400).send();
+      return;
     }
 
     res.status(200).send(route_res);
@@ -56,6 +59,7 @@ export async function updateRoute(req, res) {
   try {
     if (user_id == null || locations == null || route_id == null) {
       res.status(400).send();
+      return;
     }
 
     const places = locations.map((loc) => {
@@ -78,6 +82,7 @@ export async function updateRoute(req, res) {
 
     if (result.length === 0) {
       res.status(400).send();
+      return;
     }
 
     const ids = result.map((row) => row.id);
@@ -91,6 +96,7 @@ export async function updateRoute(req, res) {
 
     if (updated_route.length === 0) {
       res.status(400).send();
+      return;
     }
 
     res.status(200).send(updated_route[0]);
@@ -105,6 +111,7 @@ export async function deleteRoute(req, res) {
 
   if (route_id == null) {
     res.status(400).send();
+    return;
   }
   try {
     const result = await sql`
@@ -112,6 +119,7 @@ export async function deleteRoute(req, res) {
         `;
     if (res.length === 0) {
       res.status(400).send();
+      return;
     }
 
     const place_del_res = await sql`
@@ -121,6 +129,7 @@ export async function deleteRoute(req, res) {
 
     if (place_del_res.length === 0) {
       res.status(400).send();
+      return;
     }
 
     const route_del_res = await sql`
@@ -130,11 +139,44 @@ export async function deleteRoute(req, res) {
 
     if (route_del_res.length === 0) {
       res.status(400).send();
+      return;
     }
 
     res.status(200).send(route_del_res);
   } catch (err) {
     console.error(err);
     res.status(500).send();
+  }
+}
+
+export async function getRoute(req, res) {
+  const { id } = req.params;
+
+  try {
+    if (id == null) {
+      res.status(400).send();
+      return;
+    }
+
+    const route_result = await sql`
+          select * from routes where id = ${id};
+        `;
+
+    if (route_result.length === 0) {
+      res.status(400).send();
+      return;
+    }
+    console.log(route_result);
+    const place_res = await sql`
+        select * from place where id = ANY(${route_result[0].places})
+      `;
+    if (place_res.length === 0) {
+      res.status(400).send();
+    }
+    route_result[0].places = place_res;
+
+    res.status(200).send(route_result);
+  } catch (err) {
+    console.error(err);
   }
 }

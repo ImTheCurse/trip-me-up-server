@@ -12,6 +12,7 @@ tripRouter.post("/login", userController.getUser);
 tripRouter.post("/route/add", routeController.addRouteToDB);
 tripRouter.put("/route/update", routeController.updateRoute);
 tripRouter.delete("/route/delete", routeController.deleteRoute);
+tripRouter.get("/route/:id", routeController.getRoute);
 
 export const mountWSRoute = () => {
   tripRouter.ws(
