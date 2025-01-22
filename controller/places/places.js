@@ -29,3 +29,18 @@ export async function extractValidatePlaces(places) {
   }
   return res;
 }
+
+export async function getValidatedPlace(req,res){
+  const {place} = req.query
+  console.log(place)
+  if(place == null){
+    res.status(400).send({err:"no place was provided."})
+    return;
+  }
+  const validated_place = await extractValidatePlaces([place])
+  if (validated_place.places.length == 0){
+    res.status(400).send()
+    return
+  }
+  res.status(200).send(validated_place)
+}
