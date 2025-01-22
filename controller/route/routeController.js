@@ -23,8 +23,8 @@ export async function addRouteToDB(req, res) {
     });
 
     const result = await sql`
-        insert into place(name,lng,lat,icon_url,rating,address)
-        values ${sql(places.map((row) => [row.name, row.lng, row.lat, row.icon_url, row.rating, row.address]))}
+        insert into place(name,lng,lat,icon_url,rating,address,photo_ref)
+        values ${sql(places.map((row) => [row.name, row.lng, row.lat, row.icon_url, row.rating, row.address, row.photo_refs]))}
         returning id;
       `;
 
@@ -75,8 +75,8 @@ export async function updateRoute(req, res) {
     });
 
     const result = await sql`
-        insert into place(name,lng,lat,icon_url,rating,address)
-        values ${sql(places.map((row) => [row.name, row.lng, row.lat, row.icon_url, row.rating, row.address]))}
+        insert into place(name,lng,lat,icon_url,rating,address,photo_ref)
+        values ${sql(places.map((row) => [row.name, row.lng, row.lat, row.icon_url, row.rating, row.address, row.photo_refs]))}
         returning id;
       `;
 
@@ -172,6 +172,7 @@ export async function getRoute(req, res) {
       `;
     if (place_res.length === 0) {
       res.status(400).send();
+      return;
     }
     route_result[0].places = place_res;
 
