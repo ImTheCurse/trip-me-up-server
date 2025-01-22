@@ -70,7 +70,7 @@ export async function updateRoute(req, res) {
         icon_url: loc.icon,
         name: loc.name,
         rating: loc.rating ? loc.rating : null,
-        photo_refs: loc.photos.map((x) => x.photo_reference),
+        photo_refs: loc.photos,
       };
     });
 
