@@ -14,6 +14,17 @@ export async function createUnformattedPrompt(context) {
   return response.choices[0].message.content;
 }
 
+export async function createUnlimitedUnformattedPrompt(context){
+  const api_key = process.env.OPEN_AI_KEY;
+  const openai = new OpenAI({ apiKey: api_key });
+  const response = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: context,
+  });
+
+  return response.choices[0].message.content;
+}
+
 export async function createformattedPrompt(context, fmt) {
   const api_key = process.env.OPEN_AI_KEY;
   const openai = new OpenAI({ apiKey: api_key });

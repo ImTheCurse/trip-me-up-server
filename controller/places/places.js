@@ -1,9 +1,10 @@
+import { createUnlimitedUnformattedPrompt} from "../conversation/conversationUtil.js";
 export async function extractValidatePlaces(places) {
   const res = {
     places: [],
   };
   for (const place of places) {
-    const name = place.split(" ").join("%2C");
+    const name = place.name.split(" ").join("%2C");
 
     try {
       const connStr =
@@ -21,7 +22,7 @@ export async function extractValidatePlaces(places) {
       if (response.status != "OK") {
         continue;
       }
-
+      response.candidates[0].desc = place.desc
       res.places.push(response.candidates[0]);
     } catch (err) {
       console.log(err);
@@ -30,17 +31,24 @@ export async function extractValidatePlaces(places) {
   return res;
 }
 
-export async function getValidatedPlace(req,res){
-  const {place} = req.query
-  console.log(place)
-  if(place == null){
-    res.status(400).send({err:"no place was provided."})
+export async function getValidatedPlace(req, res) {
+  const { place } = req.query;
+  if (place == null) {
+    res.status(400).send({ err: "no place was provided." });
     return;
   }
-  const validated_place = await extractValidatePlaces([place])
-  if (validated_place.places.length == 0){
-    res.status(400).send()
-    return
+  const ctx = {
+    role:"user",
+    content:`give me description of the place: ${place}`
   }
-  res.status(200).send(validated_place)
+  const desc = await createUnlimitedUnformattedPrompt([ctx])
+  const p = {name:place,desc:desc}
+
+  const validated_place = await extractValidatePlaces([p]);
+  if (validated_place.places.length == 0) {
+    res.status(400).send();
+    return;
+  }
+
+  res.status(200).send(validated_place);
 }
