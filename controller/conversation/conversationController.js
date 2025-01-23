@@ -84,7 +84,6 @@ export async function handleConversation(ws, req) {
 
 
         const places = await extractValidatePlaces(p);
-        console.log(gen_route)
 
         if (places.length <= 3) {
           const gen_route = await createUnlimitedFormattedPrompt(
@@ -93,7 +92,7 @@ export async function handleConversation(ws, req) {
             1,
           );
 
-          const p = JSON.parse(gen_route).places.map((x) => x.name);
+          const p = JSON.parse(gen_route).places.map((x) => {return {name:x.name,desc:x.desc}});
           const places = await extractValidatePlaces(p);
         }
 
