@@ -7,6 +7,7 @@ import { configDotenv } from "dotenv";
 import express from "express"
 import expressWs from "express-ws";
 import postgres from "postgres";
+import cookieParser from "cookie-parser";
 
 configDotenv()
 const app = express();
@@ -18,6 +19,7 @@ export const sql = postgres(process.env.POSTGRES_DB)
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.use((req, res, next) => {
 	res.set('Access-Control-Allow-Origin', '*');

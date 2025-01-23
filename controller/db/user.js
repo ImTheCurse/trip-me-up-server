@@ -1,4 +1,5 @@
 import {sql} from "../../index.js";
+import * as jwt from "jsonwebtoken"
 
 
 export async function getUser(req,res){

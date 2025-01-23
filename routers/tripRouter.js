@@ -4,6 +4,7 @@ import * as conversationController from "../controller/conversation/conversation
 import * as userController from "../controller/db/user.js";
 import * as routeController from "../controller/route/routeController.js";
 import * as placeController from "../controller/places/places.js";
+import * as authController from "../auth/auth.js"
 
 export const tripRouter = new Router();
 
@@ -14,6 +15,7 @@ tripRouter.put("/route/update", routeController.updateRoute);
 tripRouter.delete("/route/delete", routeController.deleteRoute);
 tripRouter.get("/route/:id", routeController.getRoute);
 tripRouter.get("/places",placeController.getValidatedPlace);
+tripRouter.post("/register",authController.registerUser)
 
 export const mountWSRoute = () => {
   tripRouter.ws(
