@@ -93,3 +93,23 @@ export async function login(req, res) {
     res.status(500).send("Server error.");
   }
 }
+
+// Function to get user information from JWT
+export function getUserFromJWT(req,res) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) {
+    res.status(401).send("No jwt provided.") 
+    return;
+  }
+
+  try {
+    // Verify and decode the token
+    const decodedUser = jwt.verify(token, process.env.JWT_SECRET);
+    res.status(200).send(decodedUser)
+  } catch (err) {
+    console.error("Invalid or expired token:", err.message);
+    res.status(500).send();
+  }
+}
