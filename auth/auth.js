@@ -1,9 +1,6 @@
 import  jwt  from "jsonwebtoken";
 import {sql} from "../index.js";
 
-export async function verify(){
- 
-}
 
 export async function registerUser(req,res){
     const {name,email,username, password} = req.body;
@@ -27,7 +24,7 @@ export async function registerUser(req,res){
     }
 }
 
-const authenticateToken = (req, res, next) => {
+export const authenticateToken = (req, res, next) => {
     const authHeader = req.headers["authorization"];
   
     //Extracting token from authorization header
