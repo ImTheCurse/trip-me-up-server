@@ -79,18 +79,18 @@ export async function login(req, res) {
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      return res.status(401).send("Invalid username or password.");
+      return res.status(401).send({err:"Invalid username or password."});
     }
 
     // Generate a JWT token
     const token = jwt.sign({ id: user.id, username }, process.env.JWT_SECRET);
 
     // Set token as a cookie
-    res.cookie("tmu-token", token, { httpOnly: true, secure: true });
-    res.status(200).send("Login successful.");
+    res.cookie("tmu-token", token, { httpOnly: true, secure: true,sameSite:'Lax' });
+    res.status(200).send({err:""});
   } catch (err) {
     console.error(err);
-    res.status(500).send("Server error.");
+    res.status(500).send({err:"Server error."});
   }
 }
 
@@ -100,7 +100,7 @@ export function getUserFromJWT(req,res) {
   const token = authHeader && authHeader.split(" ")[1];
 
   if (!token) {
-    res.status(401).send("No jwt provided.") 
+    res.status(401).send({err:"No jwt provided."}) 
     return;
   }
 
