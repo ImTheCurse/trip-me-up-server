@@ -28,7 +28,7 @@ export async function registerUser(req, res) {
     const token = jwt.sign({ id: result[0].id, username }, process.env.JWT_SECRET);
 
     // Set token as a cookie
-    res.cookie("tmu-token", token, { httpOnly: true, secure: true });
+    res.cookie("tmu_token", token, { httpOnly: true, secure: true,sameSite:'None' });
     res.status(201).send("User registered successfully.");
   } catch (err) {
     console.error(err);
@@ -38,17 +38,17 @@ export async function registerUser(req, res) {
 
 // Authenticate Token Middleware
 export const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
+  const token = req.cookies["tmu_token"]; // Retrieve the token from the cookie
 
-  if (!token) {
-    return res.status(401).send("Authorization failed. No access token.");
+  if (token == null) {
+    res.status(401).send({ err: "No JWT provided." });
+    return;
   }
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) {
       console.error(err);
-      return res.status(403).send("Token verification failed.");
+      return res.status(403).send({err:"Token verification failed."});
     }
     req.user = user;
     next();
@@ -86,7 +86,7 @@ export async function login(req, res) {
     const token = jwt.sign({ id: user.id, username }, process.env.JWT_SECRET);
 
     // Set token as a cookie
-    res.cookie("tmu-token", token, { httpOnly: true, secure: true,sameSite:'None' });
+    res.cookie("tmu_token", token, { httpOnly: true, secure: true,sameSite:'None' });
     res.status(200).send({err:""});
   } catch (err) {
     console.error(err);
@@ -96,8 +96,7 @@ export async function login(req, res) {
 
 // Function to get user information from JWT
 export function getUserFromJWT(req,res) {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
+ const token = req.cookies["tmu_token"]; // Retrieve the token from the cookie
 
   if (!token) {
     res.status(401).send({err:"No jwt provided."}) 
