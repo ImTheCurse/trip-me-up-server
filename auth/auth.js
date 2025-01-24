@@ -86,7 +86,7 @@ export async function login(req, res) {
     const token = jwt.sign({ id: user.id, username }, process.env.JWT_SECRET);
 
     // Set token as a cookie
-    res.cookie("tmu-token", token, { httpOnly: true, secure: true,sameSite:'Lax' });
+    res.cookie("tmu-token", token, { httpOnly: true, secure: true,sameSite:'None' });
     res.status(200).send({err:""});
   } catch (err) {
     console.error(err);
