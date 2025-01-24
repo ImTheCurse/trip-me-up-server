@@ -27,6 +27,9 @@ app.use((req, res, next) => {
 		"http://localhost:3000", // Frontend development port(not sure if needed...)
 		"http://localhost:5173",
         `http://localhost:${port}`, // Local development
+		"https://localhost:3000", // Frontend development port(not sure if needed...)
+		"https://localhost:5173",
+        `https://localhost:${port}`, // Local development
     ];
 
     const origin = req.headers.origin;
