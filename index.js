@@ -26,6 +26,7 @@ app.use((req, res, next) => {
 	res.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
 	res.set('Access-Control-Allow-Methods', "GET, POST, PUT, DELETE");
 	res.set('Content-Type', 'application/json');
+	res.set('Access-Control-Allow-Credentials', 'true'); 
 	next();
 });
 
