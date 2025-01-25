@@ -5,6 +5,7 @@ import * as conversationController from "../controller/conversation/conversation
 import * as routeController from "../controller/route/routeController.js";
 import * as placeController from "../controller/places/places.js";
 import * as authController from "../auth/auth.js"
+import { getRoutePermissions } from "../middleware/permission.js";
 
 export const tripRouter = new Router();
 
@@ -12,7 +13,7 @@ tripRouter.post("/chat/prompt",authenticateToken, promptController.handlePrompt)
 tripRouter.post("/route/add",authenticateToken, routeController.addRouteToDB);
 tripRouter.put("/route/update",authenticateToken, routeController.updateRoute);
 tripRouter.delete("/route/delete",authenticateToken,routeController.deleteRoute);
-tripRouter.get("/route/:id",authenticateToken,routeController.getRoute);
+tripRouter.get("/route/:id",getRoutePermissions,routeController.getRoute);
 tripRouter.get("/places",authenticateToken,placeController.getValidatedPlace);
 tripRouter.get("/user",authenticateToken,authController.getUserFromJWT);
 tripRouter.post("/register",authController.registerUser);
