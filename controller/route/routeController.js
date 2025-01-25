@@ -192,7 +192,7 @@ export async function getRoute(req, res) {
     }
     route_result[0].places = place_res;
 
-    res.status(200).send({places:route_result,permission:req.permissions});
+    res.status(200).send({route:route_result,permission:req.permissions});
   } catch (err) {
     console.error(err);
   }
