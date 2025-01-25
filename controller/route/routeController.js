@@ -19,12 +19,14 @@ export async function addRouteToDB(req, res) {
         name: loc.name,
         rating: loc.rating ? loc.rating : null,
         photo_refs: loc.photos.map((x) => x.photo_reference),
+        desc: loc.desc,
       };
     });
 
+    // TODO: add notes to db
     const result = await sql`
-        insert into place(name,lng,lat,icon_url,rating,address,photo_ref)
-        values ${sql(places.map((row) => [row.name, row.lng, row.lat, row.icon_url, row.rating, row.address, row.photo_refs]))}
+        insert into place(name,lng,lat,icon_url,rating,address,photo_ref,description)
+        values ${sql(places.map((row) => [row.name, row.lng, row.lat, row.icon_url, row.rating, row.address, row.photo_refs, row.desc]))}
         returning id;
       `;
 
@@ -49,7 +51,7 @@ export async function addRouteToDB(req, res) {
     res.status(200).send(route_res);
   } catch (err) {
     console.log(err);
-    res.status(500).send();
+    res.status(500).send({ err: err });
   }
 }
 
@@ -71,12 +73,26 @@ export async function updateRoute(req, res) {
         name: loc.name,
         rating: loc.rating ? loc.rating : null,
         photo_refs: loc.photos,
+        desc: loc.desc,
+        notes: loc.notes,
       };
     });
 
     const result = await sql`
-        insert into place(name,lng,lat,icon_url,rating,address,photo_ref)
-        values ${sql(places.map((row) => [row.name, row.lng, row.lat, row.icon_url, row.rating, row.address, row.photo_refs]))}
+        insert into place(name,lng,lat,icon_url,rating,address,photo_ref,description,notes)
+        values ${sql(
+          places.map((row) => [
+            row.name,
+            row.lng,
+            row.lat,
+            row.icon_url,
+            row.rating,
+            row.address,
+            row.photo_refs,
+            row.desc,
+            row.notes,
+          ]),
+        )}
         returning id;
       `;
 
@@ -175,6 +191,7 @@ export async function getRoute(req, res) {
       return;
     }
     route_result[0].places = place_res;
+    route_result.permission = req.permissions;
 
     res.status(200).send(route_result);
   } catch (err) {
