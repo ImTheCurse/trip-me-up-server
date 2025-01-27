@@ -97,7 +97,7 @@ export async function login(req, res) {
 // Function to get user information from JWT
 export function getUserFromJWT(req,res) {
  const token = req.cookies["tmu_token"]; // Retrieve the token from the cookie
-
+  
   if (!token) {
     res.status(401).send({err:"No jwt provided."}) 
     return;

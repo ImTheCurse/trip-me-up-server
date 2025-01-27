@@ -197,3 +197,31 @@ export async function getRoute(req, res) {
     console.error(err);
   }
 }
+
+export async function getRouteSummary(req,res){
+  const {id} = req.params;
+  
+  try{
+    if (id == null) {
+      res.status(400).send();
+      return;
+    }
+    const result = await sql`
+      SELECT p.id,p.name,p.photo_ref
+      FROM routes r
+      JOIN place p ON p.id = ANY(r.places)
+      WHERE r.id = ${id};
+    `
+    const response = {
+      id:result.map((row)=>row.id),
+      places: result.map((row)=>row.name),
+      images:result.map((row)=>row.photo_ref[0])
+    }
+    res.status(200).send(response)
+
+  }catch(err){
+    console.log(err)
+    res.status(500).send({err:err})
+  }  
+
+}

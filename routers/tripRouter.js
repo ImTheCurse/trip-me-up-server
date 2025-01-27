@@ -14,6 +14,7 @@ tripRouter.post("/route/add",authenticateToken, routeController.addRouteToDB);
 tripRouter.put("/route/update",authenticateToken, routeController.updateRoute);
 tripRouter.delete("/route/delete",authenticateToken,routeController.deleteRoute);
 tripRouter.get("/route/:id",getRoutePermissions,routeController.getRoute);
+tripRouter.get("/route/summary/:id",getRoutePermissions,routeController.getRouteSummary);
 tripRouter.get("/places",authenticateToken,placeController.getValidatedPlace);
 tripRouter.get("/user",authenticateToken,authController.getUserFromJWT);
 tripRouter.post("/register",authController.registerUser);
