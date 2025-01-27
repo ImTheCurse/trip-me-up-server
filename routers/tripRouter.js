@@ -19,6 +19,7 @@ tripRouter.get("/places",authenticateToken,placeController.getValidatedPlace);
 tripRouter.get("/user",authenticateToken,authController.getUserFromJWT);
 tripRouter.post("/register",authController.registerUser);
 tripRouter.post("/login",authController.login);
+tripRouter.get("/logout",authController.logout)
 
 export const mountWSRoute = () => {
   tripRouter.ws(

@@ -27,8 +27,9 @@ export async function registerUser(req, res) {
     // Generate a token for the user
     const token = jwt.sign({ id: result[0].id, username }, process.env.JWT_SECRET);
 
+    const secure_auth = process.env.DEV_MODE == "true" ? true : false
     // Set token as a cookie
-    res.cookie("tmu_token", token, { httpOnly: true, secure: true,sameSite:'None' });
+    res.cookie("tmu_token", token, { httpOnly: secure_auth, secure: secure_auth,sameSite:'None' });
     res.status(201).send("User registered successfully.");
   } catch (err) {
     console.error(err);
@@ -85,8 +86,9 @@ export async function login(req, res) {
     // Generate a JWT token
     const token = jwt.sign({ id: user.id, username }, process.env.JWT_SECRET);
 
+    const secure_auth = process.env.DEV_MODE == "true" ? true : false
     // Set token as a cookie
-    res.cookie("tmu_token", token, { httpOnly: true, secure: true,sameSite:'None' });
+    res.cookie("tmu_token", token, { httpOnly: secure_auth, secure: secure_auth,sameSite:'None' });
     res.status(200).send({err:""});
   } catch (err) {
     console.error(err);
@@ -111,4 +113,9 @@ export function getUserFromJWT(req,res) {
     console.error("Invalid or expired token:", err.message);
     res.status(500).send();
   }
+}
+
+export function logout(req,res){
+  res.cookie("tmu_token","");
+  res.status(200).send({err:""})
 }
