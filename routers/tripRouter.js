@@ -13,13 +13,14 @@ tripRouter.post("/chat/prompt",authenticateToken, promptController.handlePrompt)
 tripRouter.post("/route/add",authenticateToken, routeController.addRouteToDB);
 tripRouter.put("/route/update",authenticateToken, routeController.updateRoute);
 tripRouter.delete("/route/delete",authenticateToken,routeController.deleteRoute);
+tripRouter.get("/route/all",authenticateToken,routeController.getAllRoutesSummary);
 tripRouter.get("/route/:id",getRoutePermissions,routeController.getRoute);
 tripRouter.get("/route/summary/:id",authenticateToken,routeController.getRouteSummary);
 tripRouter.get("/places",authenticateToken,placeController.getValidatedPlace);
 tripRouter.get("/user",authenticateToken,authController.getUserFromJWT);
 tripRouter.post("/register",authController.registerUser);
 tripRouter.post("/login",authController.login);
-tripRouter.get("/logout",authController.logout)
+tripRouter.get("/logout",authController.logout);
 
 export const mountWSRoute = () => {
   tripRouter.ws(

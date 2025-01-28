@@ -225,3 +225,42 @@ export async function getRouteSummary(req,res){
   }  
 
 }
+
+export async function getAllRoutesSummary(req,res){
+  const { id } = req.user;
+  try {
+    if(id == null){
+      res.status(400).send();
+      return;
+    }
+    const result = await sql`
+      SELECT 
+        r.id AS route_id,
+        JSON_AGG(p.name) AS places,
+        JSON_AGG(p.photo_ref[1]) AS images
+      FROM 
+        routes r
+      JOIN 
+        place p ON p.id = ANY(r.places)
+      WHERE 
+        r.user_id = ${id}
+      GROUP BY 
+        r.id;`
+    
+    const response = {
+      routes:result.map((route) => {
+        return{
+          id:route.route_id,
+          places:route.places,
+          images:route.images
+        }
+      })
+    };
+    res.status(200).send(response);
+
+  } catch (error) {
+    console.log(err)
+    res.status(500).send({err:err})
+  }
+  
+}
