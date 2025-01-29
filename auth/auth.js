@@ -86,7 +86,7 @@ export async function login(req, res) {
     // Generate a JWT token
     const token = jwt.sign({ id: user.id, username }, process.env.JWT_SECRET);
 
-    const secure_auth = process.env.DEV_MODE == "true" ? true : false
+    const secure_auth = process.env.DEV_MODE == "true" ? false : true
     // Set token as a cookie
     res.cookie("tmu_token", token, { httpOnly: secure_auth, secure: secure_auth,sameSite:'None' });
     res.status(200).send({err:""});
