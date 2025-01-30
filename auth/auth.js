@@ -67,7 +67,7 @@ export async function login(req, res) {
   try {
     // Fetch the user from the database
     const result = await sql`
-      SELECT id, password FROM users WHERE username = ${username};
+      SELECT id, password, name, username, email FROM users WHERE username = ${username};
     `;
 
     if (result.length === 0) {
@@ -89,7 +89,15 @@ export async function login(req, res) {
     const secure_auth = process.env.DEV_MODE == "true" ? false : true
     // Set token as a cookie
     res.cookie("tmu_token", token, { httpOnly: secure_auth, secure: secure_auth,sameSite:'None' });
-    res.status(200).send({err:""});
+
+    // send basic user info to client
+    const response = {
+      username: user.username,
+      name: user.name,
+      email: user.email
+    };
+
+    res.status(200).send({userdata:response, err:""});
   } catch (err) {
     console.error(err);
     res.status(500).send({err:"Server error."});
