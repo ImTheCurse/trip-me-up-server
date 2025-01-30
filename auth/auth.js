@@ -61,7 +61,7 @@ export async function login(req, res) {
   const { username, password } = req.body;
 
   if (!username || !password) {
-    return res.status(400).send("Username and password are required.");
+    return res.status(400).send({err:"Username and password are required."});
   }
 
   try {
@@ -71,7 +71,7 @@ export async function login(req, res) {
     `;
 
     if (result.length === 0) {
-      return res.status(401).send("Invalid username or password.");
+      return res.status(401).send({err:"Invalid username or password."});
     }
 
     const user = result[0];
