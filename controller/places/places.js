@@ -41,6 +41,15 @@ export async function extractValidatePlaces(places) {
       }
       response.result.desc = place.desc;
       response.result.photos = response.result.photos.slice(0,4);
+
+      response.result.photos = await Promise.all(
+        response.result.photos.map(async (photo) => {
+            const photo_ref = photo.photo_reference;
+            const photo_resp = await fetch(`https://maps.googleapis.com/maps/api/place/photo?maxwidth=1000&photo_reference=${photo_ref}&key=${process.env.GOOGLE_PLACES_KEY}`);
+            return photo_resp.url;
+        })
+      );
+
       res.places.push(response.result);
     } catch (err) {
       console.log(err);

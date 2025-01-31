@@ -2,13 +2,20 @@ import { sql } from "../../index.js";
 import { extractValidatePlaces } from "../places/places.js";
 
 export async function addRouteToDB(req, res) {
-  const { user_id, locations } = req.body;
+  const { locations } = req.body;
 
   try {
-    if (user_id == null || locations == null) {
+    if (locations == null) {
       res.status(400).send();
       return;
     }
+    const { id } = req.user;
+    if(id == null){
+      res.status(400).send();
+      return;
+    }
+
+    const user_id = id;
 
     const places = locations.map((loc) => {
       return {
@@ -18,7 +25,7 @@ export async function addRouteToDB(req, res) {
         icon_url: loc.icon,
         name: loc.name,
         rating: loc.rating ? loc.rating : null,
-        photo_refs: loc.photos.map((x) => x.photo_reference),
+        photo_refs: loc.photos,
         desc: loc.desc,
       };
     });
