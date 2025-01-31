@@ -13,14 +13,18 @@ export async function handleConversation(ws, req) {
   });
 
   const ctx = [];
+  ctx.push({ role: "developer", content: 
+    `you are a helpful trip assistant, and you are expected to extract `+
+    `parameters about a future trip. the parameters are: `+
+    `country, cities, hobbies, duration. try to use emojies and be cute.`
+  },{role:"system",content:"In what country would you like to start your trip?"});
 
   // Create json formatted trip scheme
   const params = [
     zod.object({ country: zod.string(), next: "city" }),
     zod.object({ city: zod.string(), next: "hobbies" }),
     zod.object({ hobbies: zod.string(), next: "duration" }),
-    zod.object({ duration: zod.number(), next: "purpose" }),
-    zod.object({ purpose: zod.string(), next: "null" }),
+    zod.object({ duration: zod.string(), next: "null" }),
   ];
 
   const trip_structure = zod.object({
@@ -57,16 +61,15 @@ export async function handleConversation(ws, req) {
         city: parsed_params[1].city,
         hobbies: parsed_params[2].hobbies,
         duration: parsed_params[3].duration,
-        purpose: parsed_params[4].purpose,
       };
 
       const gen_ctx = [
         {
           role: "user",
-          content: `Give me places to visit in the country of ${trip.country} and in the cities of ${trip.city}
-                    for a person who is intrested in the following hobbies: ${trip.hobbies}.
-                    the trip should be a duration of ${trip.duration},the person should be able to drive within the timeframe
-                    to all the location. only give locations inside the cities, and atleast one per city stated.`,
+          content: `Give me places to visit in the country of ${trip.country} and in the cities of ${trip.city} `+
+                    `for a person who is intrested in the following hobbies: ${trip.hobbies}. `+
+                    `the trip should be a duration of ${trip.duration},the person should be able to drive within the timeframe `+
+                    `to all the location. only give locations inside the cities, and atleast one per city stated. `,
         },
       ];
       const sites_structure = zod.object({

@@ -6,7 +6,7 @@ socket.addEventListener("open", (event) => {
     console.log(event.data)
 });
 let i = 0;
-const answers = ['Germany','Baden Baden and berlin','spa, maybe visit the casino, but mainly relax','for about 5 days']
+const answers = ['Israel','tel aviv','swimming','for about 3 days']
 // Listen for messages
 socket.addEventListener("message", (event) => {
   console.log("Message from server ", JSON.parse(event.data));

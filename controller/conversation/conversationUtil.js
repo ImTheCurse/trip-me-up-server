@@ -28,14 +28,12 @@ export async function createUnlimitedUnformattedPrompt(context){
 export async function createformattedPrompt(context, fmt) {
   const api_key = process.env.OPEN_AI_KEY;
   const openai = new OpenAI({ apiKey: api_key });
-
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     max_completion_tokens: 100,
     messages: context,
     response_format: zodResponseFormat(fmt, "trip-params"),
   });
-
   return response.choices[0].message.content;
 }
 
@@ -46,6 +44,7 @@ export async function createUnlimitedFormattedPrompt(context, fmt, choice_num) {
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: context,
+    temperature:0.5,
     response_format: zodResponseFormat(fmt, "trip-params"),
   });
 
@@ -54,7 +53,6 @@ export async function createUnlimitedFormattedPrompt(context, fmt, choice_num) {
 
 export async function replyToMessage(msg, fmt, answered_params, ctx, ws) {
   ctx.push({ role: "user", content: msg });
-
   const response_to_trip = await createformattedPrompt(ctx, fmt);
 
   if (fmt.shape.next === "null") {

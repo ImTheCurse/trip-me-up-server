@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { authenticateToken } from "../auth/auth.js";
+import { getRoutePermissions } from "../middleware/permission.js";
 import * as promptController from "../controller/promptController.js";
 import * as conversationController from "../controller/conversation/conversationController.js";
 import * as routeController from "../controller/route/routeController.js";
 import * as placeController from "../controller/places/places.js";
 import * as authController from "../auth/auth.js"
-import { getRoutePermissions } from "../middleware/permission.js";
 
 export const tripRouter = new Router();
 
