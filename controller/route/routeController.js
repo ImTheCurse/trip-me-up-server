@@ -63,10 +63,17 @@ export async function addRouteToDB(req, res) {
 }
 
 export async function updateRoute(req, res) {
-  const { user_id, route_id, locations } = req.body;
+  const { route_id, locations } = req.body;
+
+  const { id } = req.user;
+    if(id == null){
+      res.status(400).send();
+      return;
+    }
+  const user_id = id;
 
   try {
-    if (user_id == null || locations == null || route_id == null) {
+    if (locations == null || route_id == null) {
       res.status(400).send();
       return;
     }
