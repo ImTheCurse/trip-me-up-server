@@ -30,6 +30,7 @@ app.use((req, res, next) => {
 		"https://localhost:3000", // Frontend development port(not sure if needed...)
 		"https://localhost:5173",
         `https://localhost:${port}`, // Local development
+		`https://trip-me-up-client.onrender.com`
     ];
 
     const origin = req.headers.origin;
