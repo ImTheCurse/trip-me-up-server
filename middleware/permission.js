@@ -9,16 +9,11 @@ export async function getRoutePermissions(req, res, next) {
     next();
     return;
   }
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) {
-      console.error(err);
-      return res.status(403).send({ err: "Token verification failed." });
-    } else {
-      req.user = user;
-    }
-  });
 
   try {
+    const user = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = user;
+
     const { id } = req.params;
     const result = await sql`
           select user_id from routes where id = ${id} and user_id = ${req.user.id};
