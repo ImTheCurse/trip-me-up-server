@@ -1,5 +1,5 @@
-import  jwt  from "jsonwebtoken";
-import {sql} from "../index.js";
+import jwt from "jsonwebtoken";
+import { sql } from "../index.js";
 
 export async function getRoutePermissions(req, res, next) {
   const token = req.cookies["tmu_token"]; // Retrieve the token from the cookie
@@ -13,12 +13,13 @@ export async function getRoutePermissions(req, res, next) {
     if (err) {
       console.error(err);
       return res.status(403).send({ err: "Token verification failed." });
+    } else {
+      req.user = user;
     }
-    req.user = user;
   });
 
   try {
-    const {id} = req.params;
+    const { id } = req.params;
     const result = await sql`
           select user_id from routes where id = ${id} and user_id = ${req.user.id};
       `;
