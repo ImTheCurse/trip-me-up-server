@@ -2,16 +2,21 @@ import { sql } from "../../index.js";
 import { extractValidatePlaces } from "../places/places.js";
 
 export async function addRouteToDB(req, res) {
-  const { locations } = req.body;
+  const { locations, start_date } = req.body;
 
   try {
-    if (locations == null) {
-      res.status(400).send();
+    if (locations == null || start_date == null) {
+      res.status(400).send({ err: 'locations or start_date are null' });
       return;
     }
     const { id } = req.user;
     if(id == null){
-      res.status(400).send();
+      res.status(400).send({ err: 'user is not logged in' });
+      return;
+    }
+    const startDate = new Date(start_date);
+    if (isNaN(startDate)) {
+      res.status(400).send({ err: 'Invalid start_date format' });
       return;
     }
 
@@ -30,7 +35,6 @@ export async function addRouteToDB(req, res) {
       };
     });
 
-    // TODO: add notes to db
     const result = await sql`
         insert into place(name,lng,lat,icon_url,rating,address,photo_ref,description)
         values ${sql(places.map((row) => [row.name, row.lng, row.lat, row.icon_url, row.rating, row.address, row.photo_refs, row.desc]))}
@@ -44,9 +48,8 @@ export async function addRouteToDB(req, res) {
 
     const ids = result.map((row) => row.id);
 
-    // TODO: Add start + end date
     const route_res = await sql`
-      insert into routes(user_id,places) values (${user_id},${ids})
+      insert into routes(user_id,places,start_date) values (${user_id},${ids},${startDate})
       returning *
       `;
 
@@ -196,7 +199,6 @@ export async function getRoute(req, res) {
       res.status(400).send();
       return;
     }
-    console.log(route_result);
     const place_res = await sql`
         select * from place where id = ANY(${route_result[0].places})
       `;
@@ -205,6 +207,7 @@ export async function getRoute(req, res) {
       return;
     }
     route_result[0].places = place_res;
+    route_result[0].start_date = route_result[0].start_date.toISOString().split('T')[0];
 
     res.status(200).send({route:route_result,permission:req.permissions});
   } catch (err) {
@@ -250,6 +253,7 @@ export async function getAllRoutesSummary(req,res){
     const result = await sql`
       SELECT 
         r.id AS route_id,
+        r.start_date AS start_date,
         JSON_AGG(p.name) AS places,
         JSON_AGG(p.photo_ref[1]) AS images
       FROM 
@@ -266,7 +270,10 @@ export async function getAllRoutesSummary(req,res){
         return{
           id:route.route_id,
           places:route.places,
-          images:route.images
+          images:route.images,
+          start_date: (route.start_date 
+          ? route.start_date.toISOString().split('T')[0] 
+          : null)
         }
       })
     };
