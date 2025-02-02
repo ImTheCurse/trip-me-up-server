@@ -32,12 +32,13 @@ export async function addRouteToDB(req, res) {
         rating: loc.rating ? loc.rating : null,
         photo_refs: loc.photos,
         desc: loc.desc,
+        opening_hours: loc.opening_hours ? loc.opening_hours.weekday_text : null
       };
     });
 
     const result = await sql`
-        insert into place(name,lng,lat,icon_url,rating,address,photo_ref,description)
-        values ${sql(places.map((row) => [row.name, row.lng, row.lat, row.icon_url, row.rating, row.address, row.photo_refs, row.desc]))}
+        insert into place(name,lng,lat,icon_url,rating,address,photo_ref,description, opening_hours)
+        values ${sql(places.map((row) => [row.name, row.lng, row.lat, row.icon_url, row.rating, row.address, row.photo_refs, row.desc, row.opening_hours]))}
         returning id;
       `;
 
