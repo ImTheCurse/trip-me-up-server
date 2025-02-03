@@ -14,6 +14,7 @@ export async function handleConversation(ws, req) {
 
   const now = new Date();
   const ctx = [];
+  console.log(now);
   ctx.push({ role: "developer", content: 
     `you are a helpful trip assistant, and you are expected to extract `+
     `parameters about a future trip. the parameters are: `+
