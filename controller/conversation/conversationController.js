@@ -12,11 +12,13 @@ export async function handleConversation(ws, req) {
     route: null,
   });
 
+  const now = new Date();
   const ctx = [];
   ctx.push({ role: "developer", content: 
     `you are a helpful trip assistant, and you are expected to extract `+
     `parameters about a future trip. the parameters are: `+
-    `country, cities, hobbies, duration. try to use emojies and be cute.`
+    `country, cities, hobbies, duration. try to use emojies and be cute.`+
+    `for reference, the current date time is ${now.toISOString()}`
   },{role:"system",content:"In what country would you like to start your trip?"});
 
   // Create json formatted trip scheme
