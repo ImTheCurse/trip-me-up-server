@@ -5,8 +5,7 @@ export async function extractValidatePlaces(places) {
     places: [],
   };
   for (const place of places) {
-    const name = place.name.split(" ").join("%2C");
-
+    const name = encodeURIComponent(place.name);
     try {
 
       const connStrFindPlace =
@@ -71,7 +70,7 @@ export async function getValidatedPlace(req, res) {
   }
   const ctx = {
     role:"user",
-    content:`give me focused description of the place: ${place}`
+    content:`give me a short, focused overview of the place: ${place}`
   }
   const desc = await createUnlimitedUnformattedPrompt([ctx])
   const p = {name:place,desc:desc}
