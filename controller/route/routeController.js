@@ -93,11 +93,12 @@ export async function updateRoute(req, res) {
         photo_refs: loc.photos,
         desc: loc.desc,
         notes: loc.notes,
+        opening_hours: loc.opening_hours ? loc.opening_hours : null
       };
     });
 
     const result = await sql`
-        insert into place(name,lng,lat,icon_url,rating,address,photo_ref,description,notes)
+        insert into place(name,lng,lat,icon_url,rating,address,photo_ref,description,notes, opening_hours)
         values ${sql(
           places.map((row) => [
             row.name,
@@ -109,6 +110,7 @@ export async function updateRoute(req, res) {
             row.photo_refs,
             row.desc,
             row.notes,
+            row.opening_hours
           ]),
         )}
         returning id;
