@@ -71,7 +71,7 @@ export async function getValidatedPlace(req, res) {
   }
   const ctx = {
     role:"user",
-    content:`give me description of the place: ${place}`
+    content:`give me focused description of the place: ${place}`
   }
   const desc = await createUnlimitedUnformattedPrompt([ctx])
   const p = {name:place,desc:desc}
