@@ -135,6 +135,12 @@ export function getUserFromJWT(req, res) {
 }
 
 export function logout(req, res) {
-  res.setHeader("set-cookie", "tmu_token=; max-age=0");
+  const secure_auth = process.env.DEV_MODE == "true" ? false : true;
+  res.clearCookie("tmu_token", {
+    httpOnly: secure_auth,
+    secure: secure_auth,
+    sameSite: "None",
+    path: "/",
+  });
   res.status(200).send({ err: "" });
 }
