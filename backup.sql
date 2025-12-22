@@ -17,7 +17,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: public; Type: SCHEMA; Schema: -; Owner: my_trip_db_i6x9
+-- Name: public; Type: SCHEMA; Schema: -; Owner: my_trip_db_i6x9_user
 --
 
 -- *not* creating schema, since initdb creates it
@@ -26,7 +26,7 @@ SET row_security = off;
 ALTER SCHEMA public OWNER TO my_trip_db_i6x9_user;
 
 --
--- Name: preferences; Type: TYPE; Schema: public; Owner: my_trip_db_i6x9
+-- Name: preferences; Type: TYPE; Schema: public; Owner: my_trip_db_i6x9_user
 --
 
 CREATE TYPE public.preferences AS (
@@ -42,7 +42,7 @@ CREATE TYPE public.preferences AS (
 ALTER TYPE public.preferences OWNER TO my_trip_db_i6x9_user;
 
 --
--- Name: weather; Type: TYPE; Schema: public; Owner: my_trip_db_i6x9
+-- Name: weather; Type: TYPE; Schema: public; Owner: my_trip_db_i6x9_user
 --
 
 CREATE TYPE public.weather AS (
@@ -59,7 +59,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- Name: place; Type: TABLE; Schema: public; Owner: my_trip_db_i6x9
+-- Name: place; Type: TABLE; Schema: public; Owner: my_trip_db_i6x9_user
 --
 
 CREATE TABLE public.place (
@@ -79,7 +79,7 @@ CREATE TABLE public.place (
 ALTER TABLE public.place OWNER TO my_trip_db_i6x9_user;
 
 --
--- Name: place_id_seq; Type: SEQUENCE; Schema: public; Owner: my_trip_db_i6x9
+-- Name: place_id_seq; Type: SEQUENCE; Schema: public; Owner: my_trip_db_i6x9_user
 --
 
 CREATE SEQUENCE public.place_id_seq
@@ -94,14 +94,14 @@ CREATE SEQUENCE public.place_id_seq
 ALTER SEQUENCE public.place_id_seq OWNER TO my_trip_db_i6x9_user;
 
 --
--- Name: place_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: my_trip_db_i6x9
+-- Name: place_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: my_trip_db_i6x9_user
 --
 
 ALTER SEQUENCE public.place_id_seq OWNED BY public.place.id;
 
 
 --
--- Name: routes; Type: TABLE; Schema: public; Owner: my_trip_db_i6x9
+-- Name: routes; Type: TABLE; Schema: public; Owner: my_trip_db_i6x9_user
 --
 
 CREATE TABLE public.routes (
@@ -116,7 +116,7 @@ CREATE TABLE public.routes (
 ALTER TABLE public.routes OWNER TO my_trip_db_i6x9_user;
 
 --
--- Name: routes_id_seq; Type: SEQUENCE; Schema: public; Owner: my_trip_db_i6x9
+-- Name: routes_id_seq; Type: SEQUENCE; Schema: public; Owner: my_trip_db_i6x9_user
 --
 
 CREATE SEQUENCE public.routes_id_seq
@@ -131,14 +131,14 @@ CREATE SEQUENCE public.routes_id_seq
 ALTER SEQUENCE public.routes_id_seq OWNER TO my_trip_db_i6x9_user;
 
 --
--- Name: routes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: my_trip_db_i6x9
+-- Name: routes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: my_trip_db_i6x9_user
 --
 
 ALTER SEQUENCE public.routes_id_seq OWNED BY public.routes.id;
 
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: my_trip_db_i6x9
+-- Name: users; Type: TABLE; Schema: public; Owner: my_trip_db_i6x9_user
 --
 
 CREATE TABLE public.users (
@@ -153,7 +153,7 @@ CREATE TABLE public.users (
 ALTER TABLE public.users OWNER TO my_trip_db_i6x9_user;
 
 --
--- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: my_trip_db_i6x9
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: my_trip_db_i6x9_user
 --
 
 CREATE SEQUENCE public.users_id_seq
@@ -168,35 +168,35 @@ CREATE SEQUENCE public.users_id_seq
 ALTER SEQUENCE public.users_id_seq OWNER TO my_trip_db_i6x9_user;
 
 --
--- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: my_trip_db_i6x9
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: my_trip_db_i6x9_user
 --
 
 ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 
 
 --
--- Name: place id; Type: DEFAULT; Schema: public; Owner: my_trip_db_i6x9
+-- Name: place id; Type: DEFAULT; Schema: public; Owner: my_trip_db_i6x9_user
 --
 
 ALTER TABLE ONLY public.place ALTER COLUMN id SET DEFAULT nextval('public.place_id_seq'::regclass);
 
 
 --
--- Name: routes id; Type: DEFAULT; Schema: public; Owner: my_trip_db_i6x9
+-- Name: routes id; Type: DEFAULT; Schema: public; Owner: my_trip_db_i6x9_user
 --
 
 ALTER TABLE ONLY public.routes ALTER COLUMN id SET DEFAULT nextval('public.routes_id_seq'::regclass);
 
 
 --
--- Name: users id; Type: DEFAULT; Schema: public; Owner: my_trip_db_i6x9
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: my_trip_db_i6x9_user
 --
 
 ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
 
 
 --
--- Data for Name: place; Type: TABLE DATA; Schema: public; Owner: my_trip_db_i6x9
+-- Data for Name: place; Type: TABLE DATA; Schema: public; Owner: my_trip_db_i6x9_user
 --
 
 COPY public.place (id, name, lng, lat, icon_url, rating, address, photo_ref, description, notes) FROM stdin;
@@ -235,7 +235,7 @@ COPY public.place (id, name, lng, lat, icon_url, rating, address, photo_ref, des
 
 
 --
--- Data for Name: routes; Type: TABLE DATA; Schema: public; Owner: my_trip_db_i6x9
+-- Data for Name: routes; Type: TABLE DATA; Schema: public; Owner: my_trip_db_i6x9_user
 --
 
 COPY public.routes (id, user_id, start_date, end_date, places) FROM stdin;
@@ -249,7 +249,7 @@ COPY public.routes (id, user_id, start_date, end_date, places) FROM stdin;
 
 
 --
--- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: my_trip_db_i6x9
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: my_trip_db_i6x9_user
 --
 
 COPY public.users (id, name, email, username, password) FROM stdin;
@@ -265,28 +265,28 @@ COPY public.users (id, name, email, username, password) FROM stdin;
 
 
 --
--- Name: place_id_seq; Type: SEQUENCE SET; Schema: public; Owner: my_trip_db_i6x9
+-- Name: place_id_seq; Type: SEQUENCE SET; Schema: public; Owner: my_trip_db_i6x9_user
 --
 
 SELECT pg_catalog.setval('public.place_id_seq', 192, true);
 
 
 --
--- Name: routes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: my_trip_db_i6x9
+-- Name: routes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: my_trip_db_i6x9_user
 --
 
 SELECT pg_catalog.setval('public.routes_id_seq', 38, true);
 
 
 --
--- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: my_trip_db_i6x9
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: my_trip_db_i6x9_user
 --
 
 SELECT pg_catalog.setval('public.users_id_seq', 45, true);
 
 
 --
--- Name: place place_pkey; Type: CONSTRAINT; Schema: public; Owner: my_trip_db_i6x9
+-- Name: place place_pkey; Type: CONSTRAINT; Schema: public; Owner: my_trip_db_i6x9_user
 --
 
 ALTER TABLE ONLY public.place
@@ -294,7 +294,7 @@ ALTER TABLE ONLY public.place
 
 
 --
--- Name: routes routes_pkey; Type: CONSTRAINT; Schema: public; Owner: my_trip_db_i6x9
+-- Name: routes routes_pkey; Type: CONSTRAINT; Schema: public; Owner: my_trip_db_i6x9_user
 --
 
 ALTER TABLE ONLY public.routes
@@ -302,7 +302,7 @@ ALTER TABLE ONLY public.routes
 
 
 --
--- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: my_trip_db_i6x9
+-- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: my_trip_db_i6x9_user
 --
 
 ALTER TABLE ONLY public.users
@@ -310,7 +310,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: my_trip_db_i6x9
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: my_trip_db_i6x9_user
 --
 
 ALTER TABLE ONLY public.users
@@ -318,7 +318,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: routes routes_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: my_trip_db_i6x9
+-- Name: routes routes_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: my_trip_db_i6x9_user
 --
 
 ALTER TABLE ONLY public.routes
@@ -329,28 +329,28 @@ ALTER TABLE ONLY public.routes
 -- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: -; Owner: postgres
 --
 
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres GRANT ALL ON SEQUENCES TO my_trip_db_i6x9;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres GRANT ALL ON SEQUENCES TO my_trip_db_i6x9_user;
 
 
 --
 -- Name: DEFAULT PRIVILEGES FOR TYPES; Type: DEFAULT ACL; Schema: -; Owner: postgres
 --
 
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres GRANT ALL ON TYPES TO my_trip_db_i6x9;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres GRANT ALL ON TYPES TO my_trip_db_i6x9_user;
 
 
 --
 -- Name: DEFAULT PRIVILEGES FOR FUNCTIONS; Type: DEFAULT ACL; Schema: -; Owner: postgres
 --
 
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres GRANT ALL ON FUNCTIONS TO my_trip_db_i6x9;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres GRANT ALL ON FUNCTIONS TO my_trip_db_i6x9_user;
 
 
 --
 -- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: -; Owner: postgres
 --
 
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres GRANT ALL ON TABLES TO my_trip_db_i6x9;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres GRANT ALL ON TABLES TO my_trip_db_i6x9_user;
 
 
 --
