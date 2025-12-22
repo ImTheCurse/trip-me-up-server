@@ -23,7 +23,7 @@ SET row_security = off;
 -- *not* creating schema, since initdb creates it
 
 
-ALTER SCHEMA public OWNER TO trip_me_up_db_user;
+ALTER SCHEMA public OWNER TO my_trip_db_i6x9_user;
 
 --
 -- Name: preferences; Type: TYPE; Schema: public; Owner: trip_me_up_db_user
