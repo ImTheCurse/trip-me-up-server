@@ -2,11 +2,17 @@ import zod from "zod";
 import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod.mjs";
 
+const getGroqClient = () => {
+  return new OpenAI({
+    apiKey: process.env.OPEN_AI_KEY,
+    baseURL: "https://api.groq.com/openai/v1",
+  });
+};
+
 export async function createUnformattedPrompt(context) {
-  const api_key = process.env.OPEN_AI_KEY;
-  const openai = new OpenAI({ apiKey: api_key });
+  const openai = getGroqClient();
   const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+    model: "llama-3.3-70b-versatile",
     max_completion_tokens: 250,
     messages: context,
   });
@@ -15,10 +21,9 @@ export async function createUnformattedPrompt(context) {
 }
 
 export async function createUnlimitedUnformattedPrompt(context){
-  const api_key = process.env.OPEN_AI_KEY;
-  const openai = new OpenAI({ apiKey: api_key });
+  const openai = getGroqClient();
   const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+    model: "llama-3.3-70b-versatile",
     messages: context,
   });
 
@@ -26,26 +31,23 @@ export async function createUnlimitedUnformattedPrompt(context){
 }
 
 export async function createformattedPrompt(context, fmt) {
-  const api_key = process.env.OPEN_AI_KEY;
-  const openai = new OpenAI({ apiKey: api_key });
+  const openai = getGroqClient();
   const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+    model: "llama-3.3-70b-versatile",
     max_completion_tokens: 100,
     messages: context,
-    response_format: zodResponseFormat(fmt, "trip-params"),
+    response_format: { type: "json_object" },
   });
   return response.choices[0].message.content;
 }
 
 export async function createUnlimitedFormattedPrompt(context, fmt, choice_num) {
-  const api_key = process.env.OPEN_AI_KEY;
-  const openai = new OpenAI({ apiKey: api_key });
-
+  const openai = getGroqClient();
   const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+    model: "llama-3.3-70b-versatile",
     messages: context,
     temperature:0.5,
-    response_format: zodResponseFormat(fmt, "trip-params"),
+    response_format: { type: "json_object" },
   });
 
   return response.choices[choice_num].message.content;
