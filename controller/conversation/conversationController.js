@@ -58,12 +58,12 @@ export async function handleConversation(ws, req) {
       
       const parsed_params = answered_params.map((x) => JSON.parse(x));
 
-      const trip = {
-        country: parsed_params[0].country,
-        city: parsed_params[1].city,
-        hobbies: parsed_params[2].hobbies,
-        start_date: parsed_params[3].start_date,
-        duration: parsed_params[4].duration,
+     const trip = {
+        country: parsed_params[0]?.country || "Unknown",
+        city: parsed_params[1]?.city || "Unknown",
+        hobbies: parsed_params[2]?.hobbies || "General",
+        start_date: parsed_params[3]?.start_date || new Date().toISOString().split('T')[0],
+        duration: parsed_params[4]?.duration || "3 days",
       };
 
       const jsonStructurePrompt = `Return the result in JSON format with this structure: { "places": [ { "full_name": "place, city, country", "desc": "description" } ], "start_date": "${trip.start_date}" }`;

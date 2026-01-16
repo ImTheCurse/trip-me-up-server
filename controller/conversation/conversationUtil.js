@@ -69,7 +69,11 @@ export async function replyToMessage(msg, fmt, answered_params, ctx, ws) {
   if (fmt.shape.next === "null" || fmt.shape.next === null) {
     return; 
   }
-const chatCtx = [...ctx, { role: "system", content: "Ask a natural question. DO NOT use JSON." }];
+const chatCtx = [...ctx, { role: "system", content: `You are extracting trip parameters. The NEXT parameter needed is: ${fmt.shape.next}. 
+                DO NOT summarize the trip yet. 
+                DO NOT answer in JSON. 
+                Ask a short, cute question ONLY about the ${fmt.shape.next}.` 
+    }];
   const response_to_user = await createUnformattedPrompt(chatCtx);
 
   ctx.push({ role: "assistant", content: response_to_user });
