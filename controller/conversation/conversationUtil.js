@@ -69,15 +69,13 @@ export async function replyToMessage(msg, fmt, answered_params, ctx, ws) {
   if (fmt.shape.next === "null" || fmt.shape.next === null) {
     return; 
   }
-  const promptCtx = [
-    ...ctx,
-    {
-      role: "system",
-      content: `Ask user in natural language for ${fmt.shape.next}. Use the word ${fmt.shape.next}. Keep it short and friendly. DO NOT use JSON.`
-    }
-  ];
+const chatCtx = [...ctx, { role: "system", content: "Ask a natural question. DO NOT use JSON." }];
   const response_to_user = await createUnformattedPrompt(chatCtx);
 
   ctx.push({ role: "assistant", content: response_to_user });
-  ws.send(JSON.stringify({ message: response_to_user, route: null }));
+
+  ws.send(JSON.stringify({
+    message: response_to_user,
+    route: null
+  }));
 }
