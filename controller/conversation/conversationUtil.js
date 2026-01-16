@@ -66,8 +66,8 @@ export async function replyToMessage(msg, fmt, answered_params, ctx, ws) {
   const response_to_trip = await createformattedPrompt(ctx, fmt);
   answered_params.push(response_to_trip);
 
-  if (fmt.shape.next === "null") {
-    return;
+  if (fmt.shape.next === "null" || fmt.shape.next === null) {
+    return; 
   }
   const promptCtx = [
     ...ctx,
@@ -76,18 +76,8 @@ export async function replyToMessage(msg, fmt, answered_params, ctx, ws) {
       content: `Ask user in natural language for ${fmt.shape.next}. Use the word ${fmt.shape.next}. Keep it short and friendly. DO NOT use JSON.`
     }
   ];
+  const response_to_user = await createUnformattedPrompt(chatCtx);
 
-  const response_to_user = await createUnformattedPrompt(promptCtx);
-
-  ctx.push({
-    role: "assistant",
-    content: response_to_user,
-  });
-
-  const resp = {
-    message: response_to_user,
-    route: null,
-  };
-
-  ws.send(JSON.stringify(resp));
+  ctx.push({ role: "assistant", content: response_to_user });
+  ws.send(JSON.stringify({ message: response_to_user, route: null }));
 }

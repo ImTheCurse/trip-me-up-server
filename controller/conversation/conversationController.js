@@ -111,7 +111,13 @@ export async function handleConversation(ws, req) {
           p.places = validated_alt;
         }
 
-        ws.send(JSON.stringify(p));
+        const finalResponse = {
+          ...p,
+          message: "Your trip is ready!",
+          route: "ready"
+        };
+
+        ws.send(JSON.stringify(finalResponse));
         ws.close();
 
         return;
