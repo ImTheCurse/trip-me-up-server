@@ -17,8 +17,9 @@ export async function handleConversation(ws, req) {
   ctx.push({ 
     role: "system", 
     content: 
-      `You are a helpful trip assistant. Talk to the user naturally and extract: country, cities, hobbies, duration. ` +
-      `Use emojis and be cute. The current date is ${now.toISOString()}.` 
+      `You are a helpful trip assistant. Talk to the user naturally and extract: country, city, hobbies, start_date, duration. ` +
+      `Use emojis and be cute. The current date is ${now.toISOString()}. ` +
+      `Do not summarize the trip until all 5 parameters are collected.`
   }, { 
     role: "assistant", 
     content: "In what country would you like to start your trip?" 
@@ -27,7 +28,7 @@ export async function handleConversation(ws, req) {
   const params = [
     zod.object({ country: zod.string(), next: "city" }),
     zod.object({ city: zod.string(), next: "hobbies" }),
-    zod.object({ hobbies: zod.string(), next: "start date" }),
+    zod.object({ hobbies: zod.string(), next: "start_date" }),
     zod.object({ start_date: zod.string(), next: "duration" }),
     zod.object({ duration: zod.string(), next: "null" }),
   ];
@@ -65,7 +66,8 @@ export async function handleConversation(ws, req) {
         start_date: parsed_params[3]?.start_date || new Date().toISOString().split('T')[0],
         duration: parsed_params[4]?.duration || "3 days",
       };
-
+      console.log("--- Generating Route for Trip ---");
+      console.log(trip);
       const jsonStructurePrompt = `Return the result in JSON format with this structure: { "places": [ { "full_name": "place, city, country", "desc": "description" } ], "start_date": "${trip.start_date}" }`;
       
       const gen_ctx = [
