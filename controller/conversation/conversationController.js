@@ -15,12 +15,16 @@ export async function handleConversation(ws, req) {
   const now = new Date();
   const ctx = [];
   console.log(now);
-  ctx.push({ role: "developer", content: 
-    `you are a helpful trip assistant, and you are expected to extract `+
-    `parameters about a future trip. the parameters are: `+
-    `country, cities, hobbies, duration. try to use emojies and be cute.`+
-    `for reference, the current date time is ${now.toISOString()}`
-  },{role:"system",content:"In what country would you like to start your trip?"});
+  ctx.push({ 
+    role: "system", 
+    content: 
+      `You are a helpful trip assistant. Extract parameters: country, cities, hobbies, duration. ` +
+      `Use emojis and be cute. The current date is ${now.toISOString()}. ` +
+      `IMPORTANT: Always respond in valid JSON format as requested.` 
+  }, { 
+    role: "assistant", 
+    content: "In what country would you like to start your trip?" 
+  });
 
   // Create json formatted trip scheme
   const params = [
@@ -45,7 +49,9 @@ export async function handleConversation(ws, req) {
   //websocket event listners
   ws.on("message", async (msg) => {
     try {
-      await replyToMessage(msg, params[idx], answered_params, ctx, ws);
+      const currentFmt = params[idx];
+      ctx.push({ role: "system", content: "Return ONLY a JSON object." });
+      await replyToMessage(msg, currentFmt, answered_params, ctx, ws);
     } catch (err) {
       ws.send(`Error: ${err}`);
       ws.close();
@@ -65,15 +71,15 @@ export async function handleConversation(ws, req) {
         start_date: parsed_params[3].start_date,
         duration: parsed_params[4].duration,
       };
-
+      const jsonStructurePrompt = `Return the result in JSON format with this structure: { "places": [ { "full_name": "place, city, country", "desc": "description" } ], "start_date": "${trip.start_date}" }`;
       const gen_ctx = [
         {
           role: "user",
-          content: `Give me places (specify the full name: place, city, country) to visit in the country of ${trip.country} and in the cities of ${trip.city} `+
-                    `for a person who is intrested in the following hobbies: ${trip.hobbies}. `+
-                    `the trip should be a duration of ${trip.duration}, and the person should start the trip on the date of ${trip.start_date}.` +
-                    `the person should be able to drive within the timeframe `+
-                    `to all the location. only give locations inside the cities stated, and atleast one per city stated. `,
+          content: `Give me places to visit in the country of ${trip.country} and in the cities of ${trip.city} `+
+                    `for a person interested in: ${trip.hobbies}. `+
+                    `Duration: ${trip.duration}. Start Date: ${trip.start_date}. ` +
+                    `Only give locations inside the cities stated. ` +
+                    jsonStructurePrompt,
         },
       ];
       const sites_structure = zod.object({
@@ -88,21 +94,21 @@ export async function handleConversation(ws, req) {
           0,
         );
 
-        const p = JSON.parse(gen_route)
-        console.log(p);
-        p.places = p.places.map((x) => {return {name:x.full_name,desc:x.desc}});
+        let p = JSON.parse(gen_route);
+        p.places = p.places.map((x) => ({ name: x.full_name || x.name, desc: x.desc }));
         p.places = await extractValidatePlaces(p.places);
 
         if (p.places.length <= 3) {
-          const gen_route = await createUnlimitedFormattedPrompt(
+          const gen_route_alt = await createUnlimitedFormattedPrompt(
             gen_ctx,
             sites_structure,
             1,
           );
-
-          const p = JSON.parse(gen_route)
-          p.places = p.places.map((x) => {return {name:x.name,desc:x.desc}});
-          p.places = await extractValidatePlaces(p.places);
+          const p_alt = JSON.parse(gen_route_alt);
+          const validated_alt = await extractValidatePlaces(
+            p_alt.places.map((x) => ({ name: x.full_name || x.name, desc: x.desc }))
+            );
+          p.places = validated_alt;
         }
 
         ws.send(JSON.stringify(p));

@@ -5,16 +5,20 @@ export async function handlePrompt(req, res) {
   try {
     const prompt = req.body.prompt;
 
-    const openai = new OpenAI({ apiKey: api_key });
+    const openai = new OpenAI({ 
+      apiKey: api_key,
+      baseURL: "https://api.groq.com/openai/v1"
+    });
     const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "llama-3.3-70b-versatile",
       messages: [
-        { role: "system", content: "Make all output in json." },
+        { role: "system", content: "You are a helpful assistant. Make all output in valid JSON format." },
         {
           role: "user",
           content: prompt,
         },
       ],
+      response_format: { type: "json_object" },
     });
 
     console.log(completion.choices[0].message);
