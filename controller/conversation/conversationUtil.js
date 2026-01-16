@@ -32,10 +32,14 @@ export async function createUnlimitedUnformattedPrompt(context){
 
 export async function createformattedPrompt(context, fmt) {
   const openai = getGroqClient();
+  const jsonContext = [
+    ...context,
+    { role: "system", content: "Extract the data and return it ONLY in valid JSON format." }
+  ];
   const response = await openai.chat.completions.create({
     model: "llama-3.3-70b-versatile",
     max_completion_tokens: 100,
-    messages: context,
+    messages: jsonContext,
     response_format: { type: "json_object" },
   });
   return response.choices[0].message.content;
@@ -43,9 +47,13 @@ export async function createformattedPrompt(context, fmt) {
 
 export async function createUnlimitedFormattedPrompt(context, fmt, choice_num) {
   const openai = getGroqClient();
+  const jsonContext = [
+    ...context,
+    { role: "system", content: "Return the trip plan ONLY in valid JSON format." }
+  ];
   const response = await openai.chat.completions.create({
     model: "llama-3.3-70b-versatile",
-    messages: context,
+    messages: jsonContext,
     temperature:0.5,
     response_format: { type: "json_object" },
   });
@@ -56,25 +64,26 @@ export async function createUnlimitedFormattedPrompt(context, fmt, choice_num) {
 export async function replyToMessage(msg, fmt, answered_params, ctx, ws) {
   ctx.push({ role: "user", content: msg });
   const response_to_trip = await createformattedPrompt(ctx, fmt);
+  answered_params.push(response_to_trip);
 
   if (fmt.shape.next === "null") {
-    answered_params.push(response_to_trip);
     return;
   }
-  ctx.push({
-    role: "system",
-    content: `Ask user in natural language for ${fmt.shape.next}, use the word
-            ${fmt.shape.next} in your message. and only about it, keep your answer short.`,
-  });
+  const promptCtx = [
+    ...ctx,
+    {
+      role: "system",
+      content: `Ask user in natural language for ${fmt.shape.next}. Use the word ${fmt.shape.next}. Keep it short and friendly. DO NOT use JSON.`
+    }
+  ];
 
-  const response_to_user = await createUnformattedPrompt(ctx);
-
-  answered_params.push(response_to_trip);
+  const response_to_user = await createUnformattedPrompt(promptCtx);
 
   ctx.push({
     role: "assistant",
     content: response_to_user,
   });
+
   const resp = {
     message: response_to_user,
     route: null,
