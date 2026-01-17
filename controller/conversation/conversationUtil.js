@@ -1,19 +1,14 @@
-import zod from "zod";
 import OpenAI from "openai";
-import { zodResponseFormat } from "openai/helpers/zod.mjs";
-
-const getGroqClient = () => {
-  return new OpenAI({
-    apiKey: process.env.OPEN_AI_KEY,
-    baseURL: "https://api.groq.com/openai/v1",
-  });
-};
 
 export async function createUnformattedPrompt(context) {
-  const openai = getGroqClient();
+  const api_key = process.env.OPEN_AI_KEY; 
+  const openai = new OpenAI({ 
+    apiKey: api_key, 
+    baseURL: "https://api.groq.com/openai/v1" 
+  });
+  
   const response = await openai.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
-    max_completion_tokens: 250,
+    model: "llama3-70b-8192",
     messages: context,
   });
 
@@ -21,9 +16,14 @@ export async function createUnformattedPrompt(context) {
 }
 
 export async function createUnlimitedUnformattedPrompt(context){
-  const openai = getGroqClient();
+  const api_key = process.env.OPEN_AI_KEY;
+  const openai = new OpenAI({ 
+    apiKey: api_key, 
+    baseURL: "https://api.groq.com/openai/v1" 
+  });
+
   const response = await openai.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
+    model: "llama3-70b-8192",
     messages: context,
   });
 
@@ -31,55 +31,75 @@ export async function createUnlimitedUnformattedPrompt(context){
 }
 
 export async function createformattedPrompt(context, fmt) {
-  const openai = getGroqClient();
+  const api_key = process.env.OPEN_AI_KEY;
+  const openai = new OpenAI({ 
+    apiKey: api_key, 
+    baseURL: "https://api.groq.com/openai/v1" 
+  });
+
   const jsonContext = [
     ...context,
-    { role: "system", content: "Extract the data and return it ONLY in valid JSON format." }
+    { role: "system", content: "OUTPUT ONLY JSON OBJECT." }
   ];
+
   const response = await openai.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
-    max_completion_tokens: 100,
+    model: "llama3-70b-8192",
+    max_tokens: 100,
     messages: jsonContext,
     response_format: { type: "json_object" },
   });
+  
   return response.choices[0].message.content;
 }
 
 export async function createUnlimitedFormattedPrompt(context, fmt, choice_num) {
-  const openai = getGroqClient();
-  const jsonContext = [
-    ...context,
-    { role: "system", content: "Return the trip plan ONLY in valid JSON format." }
-  ];
-  const response = await openai.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
-    messages: jsonContext,
-    temperature:0.5,
-    response_format: { type: "json_object" },
+  const api_key = process.env.OPEN_AI_KEY;
+  const openai = new OpenAI({ 
+    apiKey: api_key, 
+    baseURL: "https://api.groq.com/openai/v1" 
   });
 
-  return response.choices[choice_num].message.content;
+  const response = await openai.chat.completions.create({
+    model: "llama3-70b-8192",
+    messages: context,
+    temperature: 0.5,
+    response_format: { type: "json_object" }, // JSON Mode
+  });
+
+  return response.choices[choice_num]?.message?.content || response.choices[0].message.content;
 }
 
 export async function replyToMessage(msg, fmt, answered_params, ctx, ws) {
   ctx.push({ role: "user", content: msg });
+
   const response_to_trip = await createformattedPrompt(ctx, fmt);
   answered_params.push(response_to_trip);
 
   if (fmt.shape.next === "null" || fmt.shape.next === null) {
-    return; 
+    return;
   }
-const chatCtx = [...ctx, { role: "system", content: `You are extracting trip parameters. The NEXT parameter needed is: ${fmt.shape.next}. 
-                DO NOT summarize the trip yet. 
-                DO NOT answer in JSON. 
-                Ask a short, cute question ONLY about the ${fmt.shape.next}.` 
-    }];
-  const response_to_user = await createUnformattedPrompt(chatCtx);
 
-  ctx.push({ role: "assistant", content: response_to_user });
+  const questionCtx = [
+    ...ctx,
+    {
+      role: "system",
+      content: `Ask user in natural language for ${fmt.shape.next}. 
+                Use the word ${fmt.shape.next} in your message. 
+                Keep it cute and short. DO NOT use JSON format here.`
+    }
+  ];
 
-  ws.send(JSON.stringify({
+  const response_to_user = await createUnformattedPrompt(questionCtx);
+
+  ctx.push({
+    role: "assistant",
+    content: response_to_user,
+  });
+
+  const resp = {
     message: response_to_user,
-    route: null
-  }));
+    route: null,
+  };
+
+  ws.send(JSON.stringify(resp));
 }
