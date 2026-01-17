@@ -108,8 +108,8 @@ export async function handleConversation(ws, req) {
         const finalPayload = {
           message: "Your trip is ready! Redirecting you now... ",
           route: "ready",
-          places: validatedResult,
-          start_date: p.start_date || trip.start_date
+          places: { places: validatedResult.places },
+          start_date: p.start_date
         };
 
         console.log("Sending final payload. Route is ready!");
