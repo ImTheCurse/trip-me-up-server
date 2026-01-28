@@ -49,8 +49,3 @@ app.use((req, res, next) => {
 app.use("/api", tripRouter);
 app.listen(port);
 console.log(`listening on port ${port}`);
-
-const path = require('path');
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../trip-me-up-client/index.html')); 
-});
