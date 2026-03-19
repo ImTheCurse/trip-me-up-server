@@ -1,7 +1,3 @@
-// require('dotenv').config();
-// const express = require('express');
-// const expressWs = require('express-ws');
-// const { mountWSRoute,tripRouter } = require('./routers/tripRouter.js')
 import { mountWSRoute, tripRouter } from "./routers/tripRouter.js";
 import { configDotenv } from "dotenv";
 import express from "express";
@@ -23,13 +19,14 @@ app.use(cookieParser());
 
 app.use((req, res, next) => {
   const allowedOrigins = [
-    "http://localhost:3000", // Frontend development port(not sure if needed...)
+    "http://localhost:3000",
     "http://localhost:5173",
-    `http://localhost:${port}`, // Local development
-    "https://localhost:3000", // Frontend development port(not sure if needed...)
+    `http://localhost:${port}`,
+    "https://localhost:3000",
     "https://localhost:5173",
-    `https://localhost:${port}`, // Local development
+    `https://localhost:${port}`,
     `https://trip-me-up-client-cr26.onrender.com`,
+    "https://trip-me-up-client.onrender.com",
   ];
 
   const origin = req.headers.origin;
