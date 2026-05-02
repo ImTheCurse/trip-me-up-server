@@ -4,6 +4,8 @@
 This is the server-side API for the Trip Me Up application, handling data persistence, authentication, and external API integrations.
 
 ---
+<img width="1900" height="879" alt="image" src="https://github.com/user-attachments/assets/8031f545-fc26-453a-af6f-1ba33da78ff8" />
+
 
 ## ⚙️ Core Features
 - **RESTful API**: Clean endpoints for managing routes, users, and places.
